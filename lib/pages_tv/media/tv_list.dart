@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../components/no_data.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
+import '../../utils/media_library_index.dart';
 import '../../utils/utils.dart';
 import '../components/filled_button.dart';
 import '../components/future_builder_handler.dart';
@@ -213,16 +214,12 @@ class _TVListPageState extends State<TVListPage> {
               height: 340,
               builder: (context, item) => _buildMediaItem(context, item, width: 160, height: 160 / 0.67),
             ),
-            MediaGridChannel(
+            AlphabetMediaGridChannel(
               label: AppLocalizations.of(context)!.tagAll,
-              onQuery:
-                  (index) => Api.tvSeriesQueryAll(
-                    MediaSearchQuery(
-                      limit: 30,
-                      offset: 30 * index,
-                      sort: const SortConfig(type: SortType.title, direction: SortDirection.asc),
-                    ),
-                  ),
+              future: MediaLibraryIndex.series(),
+              titleOf: (item) => item.displayTitle(),
+              alphabetKeyOf: MediaLibraryIndex.alphabetKey,
+              compare: MediaLibraryIndex.compareTitles,
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 196,
                 childAspectRatio: 0.5,

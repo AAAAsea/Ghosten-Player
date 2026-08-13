@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../../../components/async_image.dart';
 import '../../../pages/components/theme_builder.dart';
+import '../../components/setting.dart';
 import '../../utils/utils.dart';
 
 class DetailScaffold<T extends MediaBase> extends StatefulWidget {
@@ -70,9 +71,8 @@ class _DetailScaffoldState<T extends MediaBase> extends State<DetailScaffold<T>>
                     widget.endDrawer != null
                         ? Builder(
                           builder:
-                              (context) => Container(
-                                width: 360,
-                                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                              (context) => SizedBox(
+                                width: tvSidebarWidth,
                                 child: Navigator(
                                   key: widget.drawerNavigatorKey,
                                   onGenerateRoute:

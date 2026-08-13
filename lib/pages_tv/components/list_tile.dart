@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'fluid_focusable.dart';
-
 class TVListTile extends StatefulWidget {
   const TVListTile({
     super.key,
@@ -34,6 +32,7 @@ class TVListTile extends StatefulWidget {
 
 class _TVListTileState extends State<TVListTile> with SingleTickerProviderStateMixin {
   final _focusNode = FocusNode();
+  bool _focused = false;
 
   @override
   void dispose() {
@@ -43,20 +42,41 @@ class _TVListTileState extends State<TVListTile> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return FluidFocusable(
-      focusNode: widget.focusNode ?? _focusNode,
-      backgroundColor: Colors.transparent,
+    final colors = Theme.of(context).colorScheme;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOutCubic,
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: BoxDecoration(
+        color:
+            _focused
+                ? colors.primaryContainer.withAlpha(145)
+                : widget.selected
+                ? colors.surfaceContainerHighest
+                : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _focused ? colors.primary.withAlpha(210) : Colors.transparent,
+          width: _focused ? 1.5 : 1,
+        ),
+      ),
       child: ListTile(
         dense: widget.dense,
-        selected: widget.selected,
-        selectedTileColor: Theme.of(context).colorScheme.secondaryContainer,
+        selected: widget.selected || _focused,
+        selectedColor: colors.onPrimaryContainer,
+        selectedTileColor: Colors.transparent,
+        tileColor: Colors.transparent,
         enabled: widget.onTap != null,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         autofocus: widget.autofocus ?? false,
-        visualDensity: VisualDensity.compact,
+        minVerticalPadding: 10,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14),
         onTap: widget.onTap,
         focusNode: widget.focusNode ?? _focusNode,
-        onFocusChange: widget.onFocusChange,
+        onFocusChange: (focused) {
+          if (_focused != focused) setState(() => _focused = focused);
+          widget.onFocusChange?.call(focused);
+        },
         title: widget.title,
         subtitle:
             widget.subtitle != null
@@ -110,6 +130,7 @@ class TVRadioListTile<T> extends StatefulWidget {
 
 class _TVRadioListTileState<T> extends State<TVRadioListTile<T>> {
   final _focusNode = FocusNode();
+  bool _focused = false;
 
   @override
   void dispose() {
@@ -119,18 +140,25 @@ class _TVRadioListTileState<T> extends State<TVRadioListTile<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return FluidFocusable(
-      focusNode: widget.focusNode ?? _focusNode,
-      backgroundColor: Colors.transparent,
+    final colors = Theme.of(context).colorScheme;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: _tileDecoration(colors, _focused, widget.selected),
       child: RadioListTile(
         value: widget.value,
         groupValue: widget.groupValue,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(6))),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
         autofocus: widget.autofocus ?? false,
-        selected: widget.selected,
-        visualDensity: VisualDensity.compact,
+        selected: widget.selected || _focused,
+        selectedTileColor: Colors.transparent,
+        tileColor: Colors.transparent,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14),
         focusNode: widget.focusNode ?? _focusNode,
-        onFocusChange: widget.onFocusChange,
+        onFocusChange: (focused) {
+          if (_focused != focused) setState(() => _focused = focused);
+          widget.onFocusChange?.call(focused);
+        },
         title: widget.title,
         subtitle:
             widget.subtitle != null
@@ -181,6 +209,7 @@ class TVSwitchListTile<T> extends StatefulWidget {
 
 class _TVSwitchListTileState<T> extends State<TVSwitchListTile<T>> {
   final _focusNode = FocusNode();
+  bool _focused = false;
 
   @override
   void dispose() {
@@ -190,17 +219,24 @@ class _TVSwitchListTileState<T> extends State<TVSwitchListTile<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return FluidFocusable(
-      focusNode: widget.focusNode ?? _focusNode,
-      backgroundColor: Colors.transparent,
+    final colors = Theme.of(context).colorScheme;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: _tileDecoration(colors, _focused, widget.selected),
       child: SwitchListTile(
         value: widget.value,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(6))),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
         autofocus: widget.autofocus ?? false,
-        selected: widget.selected,
-        visualDensity: VisualDensity.compact,
+        selected: widget.selected || _focused,
+        selectedTileColor: Colors.transparent,
+        tileColor: Colors.transparent,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14),
         focusNode: widget.focusNode ?? _focusNode,
-        onFocusChange: widget.onFocusChange,
+        onFocusChange: (focused) {
+          if (_focused != focused) setState(() => _focused = focused);
+          widget.onFocusChange?.call(focused);
+        },
         title: widget.title,
         subtitle:
             widget.subtitle != null
@@ -215,4 +251,17 @@ class _TVSwitchListTileState<T> extends State<TVSwitchListTile<T>> {
       ),
     );
   }
+}
+
+BoxDecoration _tileDecoration(ColorScheme colors, bool focused, bool selected) {
+  return BoxDecoration(
+    color:
+        focused
+            ? colors.primaryContainer.withAlpha(145)
+            : selected
+            ? colors.surfaceContainerHighest
+            : Colors.transparent,
+    borderRadius: BorderRadius.circular(12),
+    border: Border.all(color: focused ? colors.primary.withAlpha(210) : Colors.transparent, width: focused ? 1.5 : 1),
+  );
 }

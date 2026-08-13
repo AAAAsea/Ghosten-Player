@@ -5,6 +5,49 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'icon_button.dart';
 import 'list_tile.dart';
 
+const tvSidebarWidth = 392.0;
+
+class TVSidebarContainer extends StatelessWidget {
+  const TVSidebarContainer({super.key, required this.child, this.width = tvSidebarWidth, this.end = true});
+
+  final Widget child;
+  final double width;
+  final bool end;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: width,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: end ? Alignment.topLeft : Alignment.topRight,
+            end: end ? Alignment.bottomRight : Alignment.bottomLeft,
+            colors: [colors.surfaceContainerHigh, colors.surfaceContainerLow],
+          ),
+          border:
+              end
+                  ? Border(left: BorderSide(color: colors.outlineVariant.withAlpha(90)))
+                  : Border(right: BorderSide(color: colors.outlineVariant.withAlpha(90))),
+          borderRadius:
+              end
+                  ? const BorderRadius.horizontal(left: Radius.circular(24))
+                  : const BorderRadius.horizontal(right: Radius.circular(24)),
+          boxShadow: [BoxShadow(color: const Color(0x33000000), blurRadius: 32, offset: Offset(end ? -12 : 12, 0))],
+        ),
+        child: ClipRRect(
+          borderRadius:
+              end
+                  ? const BorderRadius.horizontal(left: Radius.circular(24))
+                  : const BorderRadius.horizontal(right: Radius.circular(24)),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
 class ButtonSettingItem extends StatelessWidget {
   const ButtonSettingItem({
     super.key,
@@ -384,20 +427,35 @@ class SettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    final colors = Theme.of(context).colorScheme;
+    return TVSidebarContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            padding: const EdgeInsets.only(left: 24, right: 24, top: 32, bottom: 18),
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500),
-              overflow: TextOverflow.ellipsis,
+            padding: const EdgeInsets.only(left: 24, right: 20, top: 28, bottom: 20),
+            child: Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 28,
+                  decoration: BoxDecoration(color: colors.primary, borderRadius: BorderRadius.circular(8)),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w700, letterSpacing: -0.2),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant.withAlpha(130), size: 22),
+              ],
             ),
           ),
-          Divider(color: Theme.of(context).colorScheme.surfaceDim, height: 1),
+          Divider(color: colors.outlineVariant.withAlpha(90), height: 1, indent: 24, endIndent: 20),
           Expanded(child: child),
         ],
       ),

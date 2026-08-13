@@ -8,6 +8,7 @@ import '../providers/shortcut_tv.dart';
 import '../utils/utils.dart';
 import 'components/clock.dart';
 import 'components/icon_button.dart';
+import 'components/setting.dart';
 import 'media/live_list.dart';
 import 'media/movie_list.dart';
 import 'media/search.dart';
@@ -69,9 +70,8 @@ class _HomeState extends State<TVHomePage> {
         ),
         endDrawer: NavigatorPopHandler(
           onPopWithResult: (_) => _navigatorKey.currentState!.maybePop(),
-          child: Container(
-            width: 360,
-            color: Theme.of(context).colorScheme.surfaceContainerLow,
+          child: SizedBox(
+            width: tvSidebarWidth,
             child: Navigator(
               key: _navigatorKey,
               onGenerateRoute:

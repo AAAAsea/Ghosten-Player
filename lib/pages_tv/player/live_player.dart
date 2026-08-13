@@ -80,11 +80,8 @@ class _LivePlayerPageState extends State<LivePlayerPage> {
         key: _scaffoldKey,
         backgroundColor: Colors.transparent,
         drawerScrimColor: Colors.transparent,
-        drawer: Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [Colors.black87, Colors.transparent], stops: [0.2, 0.8]),
-          ),
+        drawer: TVSidebarContainer(
+          end: false,
           child: _ChannelListGrouped(
             controller: _controller,
             onTap: (index) async {
@@ -97,45 +94,42 @@ class _LivePlayerPageState extends State<LivePlayerPage> {
             },
           ),
         ),
-        endDrawer: SizedBox(
-          width: 300,
-          child: SettingPage(
-            title: AppLocalizations.of(context)!.playerBroadcastLine,
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                return ListenableBuilder(
-                  listenable: _controller.index,
-                  builder:
-                      (context, _) => ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: _controller.currentItem?.source.links.length ?? 0,
-                        itemBuilder: (context, index) {
-                          final url = _controller.currentItem!.source.links[index];
-                          return RadioSettingItem(
-                            autofocus: _controller.currentItem?.url == url,
-                            groupValue: _controller.currentItem?.url,
-                            value: url,
-                            title: Text('${AppLocalizations.of(context)!.playerBroadcastLine} ${index + 1}'),
-                            onChanged: (_) async {
-                              final currentItem = _controller.currentItem!;
-                              _controller.updateSource(currentItem.copyWith(url: url), _controller.index.value!);
-                              switch (_controller.status.value) {
-                                case PlayerStatus.paused:
-                                case PlayerStatus.ended:
-                                case PlayerStatus.error:
-                                case PlayerStatus.idle:
-                                  await _controller.play();
-                                case PlayerStatus.playing:
-                                case PlayerStatus.buffering:
-                              }
-                              setState(() {});
-                            },
-                          );
-                        },
-                      ),
-                );
-              },
-            ),
+        endDrawer: SettingPage(
+          title: AppLocalizations.of(context)!.playerBroadcastLine,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return ListenableBuilder(
+                listenable: _controller.index,
+                builder:
+                    (context, _) => ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: _controller.currentItem?.source.links.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final url = _controller.currentItem!.source.links[index];
+                        return RadioSettingItem(
+                          autofocus: _controller.currentItem?.url == url,
+                          groupValue: _controller.currentItem?.url,
+                          value: url,
+                          title: Text('${AppLocalizations.of(context)!.playerBroadcastLine} ${index + 1}'),
+                          onChanged: (_) async {
+                            final currentItem = _controller.currentItem!;
+                            _controller.updateSource(currentItem.copyWith(url: url), _controller.index.value!);
+                            switch (_controller.status.value) {
+                              case PlayerStatus.paused:
+                              case PlayerStatus.ended:
+                              case PlayerStatus.error:
+                              case PlayerStatus.idle:
+                                await _controller.play();
+                              case PlayerStatus.playing:
+                              case PlayerStatus.buffering:
+                            }
+                            setState(() {});
+                          },
+                        );
+                      },
+                    ),
+              );
+            },
           ),
         ),
         body: Stack(

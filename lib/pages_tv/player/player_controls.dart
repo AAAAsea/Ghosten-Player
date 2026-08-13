@@ -13,6 +13,7 @@ import '../../components/async_image.dart';
 import '../../components/future_builder_handler.dart';
 import '../../components/playing_icon.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/player_track_preferences.dart';
 import '../components/focusable.dart';
 import '../components/focusable_image.dart';
 import '../components/loading.dart';
@@ -66,6 +67,9 @@ class _PlayerControlsState extends State<PlayerControls> {
       _seekStep = Duration(seconds: PlayerConfig.getFastForwardSpeed(prefs));
       _showLiteProgressbar.value = prefs.getBool('playerConfig.showLiteProgressbar') ?? false;
     });
+    _controller.index.addListener(_onMediaIndexChanged);
+    _controller.trackGroup.addListener(_restoreTrackPreferences);
+    unawaited(PlayerTrackPreferences.onTracksChanged(_controller));
     if (widget.onMediaChange != null) {
       _controller.beforeMediaChanged.addListener(() {
         final data = _controller.beforeMediaChanged.value!;
@@ -150,8 +154,19 @@ class _PlayerControlsState extends State<PlayerControls> {
     super.initState();
   }
 
+  void _onMediaIndexChanged() {
+    PlayerTrackPreferences.resetForMediaChange(_controller);
+  }
+
+  void _restoreTrackPreferences() {
+    unawaited(PlayerTrackPreferences.onTracksChanged(_controller));
+  }
+
   @override
   void dispose() {
+    _controller.index.removeListener(_onMediaIndexChanged);
+    _controller.trackGroup.removeListener(_restoreTrackPreferences);
+    PlayerTrackPreferences.disposeController(_controller);
     _progressFocusNode.dispose();
     _controlsStream.close();
     _progressController.dispose();
@@ -167,7 +182,12 @@ class _PlayerControlsState extends State<PlayerControls> {
       data: ThemeData(
         colorSchemeSeed: widget.theme != null ? Color(widget.theme!) : null,
         brightness: Brightness.dark,
-        drawerTheme: const DrawerThemeData(endShape: RoundedRectangleBorder()),
+        drawerTheme: const DrawerThemeData(
+          width: tvSidebarWidth,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          endShape: RoundedRectangleBorder(borderRadius: BorderRadius.horizontal(left: Radius.circular(24))),
+        ),
       ),
       child: Builder(
         builder: (context) {
@@ -317,9 +337,8 @@ class _PlayerControlsState extends State<PlayerControls> {
       onPopWithResult: (_) {
         _navigatorKey.currentState!.maybePop();
       },
-      child: Container(
-        width: 360,
-        color: const Color(0xff202124),
+      child: SizedBox(
+        width: tvSidebarWidth,
         child: Navigator(
           key: _navigatorKey,
           onGenerateRoute:
@@ -632,7 +651,10 @@ class PlayerSettings extends StatelessWidget {
                     label: localizations.videoSettingsAudio,
                     tracks: controller.trackGroup.value.audio,
                     selected: controller.trackGroup.value.selectedAudio,
-                    onSelected: (id) => controller.setTrack('audio', id),
+                    onSelected: (id) async {
+                      await PlayerTrackPreferences.remember(controller, 'audio', id, controller.trackGroup.value.audio);
+                      await controller.setTrack('audio', id);
+                    },
                   ),
                 if (controller.trackGroup.value.sub.isNotEmpty)
                   _buildTrackSelector(
@@ -641,7 +663,10 @@ class PlayerSettings extends StatelessWidget {
                     label: localizations.videoSettingsSubtitle,
                     tracks: controller.trackGroup.value.sub,
                     selected: controller.trackGroup.value.selectedSub,
-                    onSelected: (id) => controller.setTrack('sub', id),
+                    onSelected: (id) async {
+                      await PlayerTrackPreferences.remember(controller, 'sub', id, controller.trackGroup.value.sub);
+                      await controller.setTrack('sub', id);
+                    },
                   ),
                 ListenableBuilder(
                   listenable: controller.playbackSpeed,
@@ -1060,11 +1085,9 @@ class PlayerSubSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: SettingPage(
-        title: title,
-        child: ListView(padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 32), children: items),
-      ),
+    return SettingPage(
+      title: title,
+      child: ListView(padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 32), children: items),
     );
   }
 }

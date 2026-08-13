@@ -9,6 +9,7 @@ import '../../components/future_builder_handler.dart';
 import '../../components/logo.dart';
 import '../../components/no_data.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/media_library_index.dart';
 import '../../utils/utils.dart';
 import '../components/focusable.dart';
 import '../components/icon_button.dart';
@@ -167,24 +168,22 @@ class _SearchPageState extends State<SearchPage> {
           },
         ),
       ),
-      endDrawer: Drawer(
-        child: _SearchFilter(
-          selectedFilterType: _filterType,
-          selectedGenre: _selectedGenre,
-          selectedStudio: _selectedStudio,
-          selectedKeyword: _selectedKeyword,
-          selectedCast: _selectedCast,
-          selectedCrew: _selectedCrew,
-          onChanged: (value) {
-            _filterType = value.$1;
-            _selectedGenre = value.$2;
-            _selectedStudio = value.$3;
-            _selectedKeyword = value.$4;
-            _selectedCast = value.$5;
-            _selectedCrew = value.$6;
-            setState(() {});
-          },
-        ),
+      endDrawer: _SearchFilter(
+        selectedFilterType: _filterType,
+        selectedGenre: _selectedGenre,
+        selectedStudio: _selectedStudio,
+        selectedKeyword: _selectedKeyword,
+        selectedCast: _selectedCast,
+        selectedCrew: _selectedCrew,
+        onChanged: (value) {
+          _filterType = value.$1;
+          _selectedGenre = value.$2;
+          _selectedStudio = value.$3;
+          _selectedKeyword = value.$4;
+          _selectedCast = value.$5;
+          _selectedCrew = value.$6;
+          setState(() {});
+        },
       ),
       body: PageView(
         controller: _pageController,
@@ -200,6 +199,17 @@ class _SearchPageState extends State<SearchPage> {
                 key: const ValueKey(SearchFuzzyType.series),
                 params: _params,
                 searchType: SearchFuzzyType.series,
+                localDataResolve:
+                    (params) => MediaLibraryIndex.searchSeries(
+                      params.filter ?? '',
+                      genres: params.genres,
+                      studios: params.studios,
+                      keywords: params.keywords,
+                      mediaCast: params.mediaCast,
+                      mediaCrew: params.mediaCrew,
+                      watched: params.watched,
+                      favorite: params.favorite,
+                    ),
                 itemBuilder: (context, item, index) {
                   return MediaGridItem(
                     imageUrl: item.poster,
@@ -222,6 +232,17 @@ class _SearchPageState extends State<SearchPage> {
                 key: const ValueKey(SearchFuzzyType.movie),
                 params: _params,
                 searchType: SearchFuzzyType.movie,
+                localDataResolve:
+                    (params) => MediaLibraryIndex.searchMovies(
+                      params.filter ?? '',
+                      genres: params.genres,
+                      studios: params.studios,
+                      keywords: params.keywords,
+                      mediaCast: params.mediaCast,
+                      mediaCrew: params.mediaCrew,
+                      watched: params.watched,
+                      favorite: params.favorite,
+                    ),
                 itemBuilder: (context, item, index) {
                   return MediaGridItem(
                     imageUrl: item.poster,
@@ -975,6 +996,7 @@ class _ItemSearchPage<T> extends StatefulWidget {
     required this.searchType,
     required this.itemBuilder,
     required this.dataResolve,
+    this.localDataResolve,
     this.gridDelegate = const SliverGridDelegateWithMaxCrossAxisExtent(
       maxCrossAxisExtent: 120,
       childAspectRatio: 0.5,
@@ -987,6 +1009,7 @@ class _ItemSearchPage<T> extends StatefulWidget {
   final SearchFuzzyType searchType;
   final ItemWidgetBuilder<T> itemBuilder;
   final PageData<T> Function(SearchFuzzyResult) dataResolve;
+  final Future<List<T>> Function(_SearchParams)? localDataResolve;
   final SliverGridDelegate gridDelegate;
 
   @override
@@ -995,6 +1018,7 @@ class _ItemSearchPage<T> extends StatefulWidget {
 
 class _ItemSearchPageState<T> extends State<_ItemSearchPage<T>> {
   PagingState<int, T> _state = PagingState();
+  List<T>? _localResults;
 
   Future<void> _fetchNextPage() async {
     if (_state.isLoading) return;
@@ -1007,25 +1031,34 @@ class _ItemSearchPageState<T> extends State<_ItemSearchPage<T>> {
 
     try {
       final newKey = (_state.keys?.last ?? -1) + 1;
-      final data = await Api.searchFuzzy(
-        widget.searchType,
-        limit: 30,
-        offset: newKey * 30,
-        filter: widget.params.filter,
-        genres: widget.params.genres.isNotEmpty ? widget.params.genres : null,
-        studios: widget.params.studios.isNotEmpty ? widget.params.studios : null,
-        keywords: widget.params.keywords.isNotEmpty ? widget.params.keywords : null,
-        mediaCast: widget.params.mediaCast.isNotEmpty ? widget.params.mediaCast : null,
-        mediaCrew: widget.params.mediaCrew.isNotEmpty ? widget.params.mediaCrew : null,
-        watched: widget.params.watched,
-        favorite: widget.params.favorite,
-      ).then(widget.dataResolve);
-
-      final hasNextPage = data.offset + data.limit < data.count;
+      late final List<T> items;
+      late final bool hasNextPage;
+      if (widget.localDataResolve case final resolve?) {
+        _localResults ??= await resolve(widget.params);
+        final offset = newKey * 30;
+        items = _localResults!.skip(offset).take(30).toList();
+        hasNextPage = offset + items.length < _localResults!.length;
+      } else {
+        final data = await Api.searchFuzzy(
+          widget.searchType,
+          limit: 30,
+          offset: newKey * 30,
+          filter: widget.params.filter,
+          genres: widget.params.genres.isNotEmpty ? widget.params.genres : null,
+          studios: widget.params.studios.isNotEmpty ? widget.params.studios : null,
+          keywords: widget.params.keywords.isNotEmpty ? widget.params.keywords : null,
+          mediaCast: widget.params.mediaCast.isNotEmpty ? widget.params.mediaCast : null,
+          mediaCrew: widget.params.mediaCrew.isNotEmpty ? widget.params.mediaCrew : null,
+          watched: widget.params.watched,
+          favorite: widget.params.favorite,
+        ).then(widget.dataResolve);
+        items = data.data;
+        hasNextPage = data.offset + data.limit < data.count;
+      }
 
       setState(() {
         _state = _state.copyWith(
-          pages: [...?_state.pages, data.data],
+          pages: [...?_state.pages, items],
           keys: [...?_state.keys, newKey],
           hasNextPage: hasNextPage,
           isLoading: false,
@@ -1047,6 +1080,7 @@ class _ItemSearchPageState<T> extends State<_ItemSearchPage<T>> {
   void didUpdateWidget(covariant _ItemSearchPage<T> oldWidget) {
     setState(() {
       _state = PagingState();
+      _localResults = null;
     });
     super.didUpdateWidget(oldWidget);
   }

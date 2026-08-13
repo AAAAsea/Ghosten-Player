@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +7,7 @@ import 'package:video_player/player.dart';
 
 import '../../models/models.dart';
 import '../../providers/user_config.dart';
+import '../../utils/player_track_preferences.dart';
 import '../../utils/utils.dart';
 import 'player_controls_full.dart';
 
@@ -83,11 +86,24 @@ class _SingletonPlayerState<T> extends State<SingletonPlayer<T>> {
 
   @override
   void initState() {
+    _controller.index.addListener(_onMediaIndexChanged);
+    _controller.trackGroup.addListener(_restoreTrackPreferences);
     super.initState();
+  }
+
+  void _onMediaIndexChanged() {
+    PlayerTrackPreferences.resetForMediaChange(_controller);
+  }
+
+  void _restoreTrackPreferences() {
+    unawaited(PlayerTrackPreferences.onTracksChanged(_controller));
   }
 
   @override
   void dispose() {
+    _controller.index.removeListener(_onMediaIndexChanged);
+    _controller.trackGroup.removeListener(_restoreTrackPreferences);
+    PlayerTrackPreferences.disposeController(_controller);
     _controller.dispose();
     _progressController.dispose();
     super.dispose();

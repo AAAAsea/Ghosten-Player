@@ -4,6 +4,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../components/placeholder.dart';
+import '../../components/focusable.dart';
 import '../../components/future_builder_handler.dart';
 import '../../components/loading.dart';
 
@@ -133,6 +134,134 @@ class MediaGridChannel<T> extends StatefulWidget {
 
   @override
   State<MediaGridChannel<T>> createState() => _MediaGridChannelState<T>();
+}
+
+class AlphabetMediaGridChannel<T> extends StatefulWidget {
+  const AlphabetMediaGridChannel({
+    super.key,
+    required this.label,
+    required this.future,
+    required this.itemBuilder,
+    required this.gridDelegate,
+    required this.titleOf,
+    required this.alphabetKeyOf,
+    required this.compare,
+  });
+
+  final String label;
+  final Future<List<T>> future;
+  final ItemWidgetBuilder<T> itemBuilder;
+  final SliverGridDelegate gridDelegate;
+  final String Function(T) titleOf;
+  final String Function(String) alphabetKeyOf;
+  final int Function(String, String) compare;
+
+  @override
+  State<AlphabetMediaGridChannel<T>> createState() => _AlphabetMediaGridChannelState<T>();
+}
+
+class _AlphabetMediaGridChannelState<T> extends State<AlphabetMediaGridChannel<T>> {
+  String? _activeLetter;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilderSliverHandler<List<T>>(
+      future: widget.future,
+      builder: (context, snapshot) {
+        final allItems = [...snapshot.requireData]
+          ..sort((a, b) => widget.compare(widget.titleOf(a), widget.titleOf(b)));
+        final letters = allItems.map((item) => widget.alphabetKeyOf(widget.titleOf(item))).toSet().toList()..sort();
+        final items =
+            _activeLetter == null
+                ? allItems
+                : allItems.where((item) => widget.alphabetKeyOf(widget.titleOf(item)) == _activeLetter).toList();
+
+        return SliverMainAxisGroup(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 48, right: 48, top: 12),
+                child: Row(
+                  children: [
+                    Text('${widget.label} (${allItems.length})'),
+                    const Spacer(),
+                    if (_activeLetter != null)
+                      Text(
+                        '${_activeLetter!} · ${items.length}',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 58,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 42, vertical: 8),
+                  children: [
+                    _AlphabetButton(
+                      label: widget.label,
+                      selected: _activeLetter == null,
+                      onTap: () => setState(() => _activeLetter = null),
+                    ),
+                    ...letters.map(
+                      (letter) => _AlphabetButton(
+                        label: letter,
+                        selected: _activeLetter == letter,
+                        onTap: () => setState(() => _activeLetter = letter),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 42, vertical: 12),
+              sliver: SliverGrid.builder(
+                itemCount: items.length,
+                gridDelegate: widget.gridDelegate,
+                itemBuilder: (context, index) => widget.itemBuilder(context, items[index], index),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _AlphabetButton extends StatelessWidget {
+  const _AlphabetButton({required this.label, required this.selected, required this.onTap});
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Focusable(
+        width: label.length > 1 ? 62 : 42,
+        selected: selected,
+        selectedBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        onTap: onTap,
+        child: Center(
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: selected ? Theme.of(context).colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _MediaGridChannelState<T> extends State<MediaGridChannel<T>> {

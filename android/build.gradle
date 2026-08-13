@@ -10,7 +10,7 @@ subprojects {
     afterEvaluate { project ->
         if (project.group == "com.example.installplugin") {
             project.android {
-                compileSdkVersion = 35
+                compileSdkVersion = 36
                 namespace = project.group
                 compileOptions {
                     sourceCompatibility = JavaVersion.VERSION_11
