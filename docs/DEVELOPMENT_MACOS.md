@@ -46,6 +46,8 @@ Build the Android TV debug APK:
 ```
 
 The APK is written under `build/app/outputs/flutter-apk/`.
+The default TV build contains both 32-bit and 64-bit ARM libraries so it also
+runs on projector firmware whose userspace is limited to `armeabi-v7a`.
 
 ## Git remotes
 

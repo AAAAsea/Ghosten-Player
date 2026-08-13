@@ -9,5 +9,5 @@ flutter pub get
 flutter build apk \
   --target=lib/main_tv.dart \
   --flavor=tv \
-  --target-platform=android-arm64 \
+  --target-platform=android-arm,android-arm64 \
   "$@"

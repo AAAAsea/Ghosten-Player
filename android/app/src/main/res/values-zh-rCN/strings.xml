@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Ghosten Player</string>
     <string name="watch_tv">继续观看电视剧</string>
     <string name="watch_movie">继续观看电影</string>
     <string name="flutter_downloader_notification_started">开始下载</string>
