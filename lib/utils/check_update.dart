@@ -10,7 +10,7 @@ import '../platform_api.dart';
 final currentVersion = Version.fromString(appVersion);
 
 Future<UpdateData?> checkUpdate(bool prerelease) async {
-  if (!Platform.isAndroid) {
+  if (enhancedBuild || !Platform.isAndroid) {
     return null;
   }
   final res = await Dio(BaseOptions(connectTimeout: const Duration(seconds: 30))).get(updateUrl);

@@ -18,6 +18,18 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def signingPassword = keystoreProperties['storePassword']
+if (keystoreProperties['keychainService']) {
+    signingPassword = providers.exec {
+        commandLine(
+                'security',
+                'find-generic-password',
+                '-w',
+                '-s', keystoreProperties['keychainService'],
+                '-a', keystoreProperties['keychainAccount'])
+    }.standardOutput.asText.get().trim()
+}
+
 android {
     namespace = "com.ghosten.player"
     compileSdk = 36
@@ -45,26 +57,26 @@ android {
     signingConfigs {
         release {
             keyAlias = keystoreProperties['keyAlias']
-            keyPassword = keystoreProperties['keyPassword']
+            keyPassword = keystoreProperties['keyPassword'] ?: signingPassword
             storeFile = keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword = keystoreProperties['storePassword']
+            storePassword = signingPassword
         }
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix = ".dev"
-            resValue "string", "app_name", "Ghosten Player Dev"
-        }
+        debug {}
         release {
-            signingConfig = signingConfigs.release
+            signingConfig = keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
         }
     }
 
     flavorDimensions "default"
 
     productFlavors {
-        tv {}
+        tv {
+            applicationIdSuffix = ".enhanced"
+            resValue "string", "app_name", "Ghosten Player Enhanced"
+        }
         mobile {}
     }
 }

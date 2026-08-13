@@ -10,4 +10,5 @@ flutter build apk \
   --target=lib/main_tv.dart \
   --flavor=tv \
   --target-platform=android-arm,android-arm64 \
+  --dart-define=ENHANCED_BUILD=true \
   "$@"

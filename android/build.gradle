@@ -21,6 +21,28 @@ subprojects {
                 }
             }
         }
+
+        // The upstream API AAR ships its Android service as bytecode and its
+        // native libraries together. Enhanced keeps the native libraries but
+        // builds the service adapter from source so the upstream API identity
+        // can remain stable under our independent application signature.
+        if (project.group == "com.ghosten.api") {
+            project.android.sourceSets.main.java.srcDirs +=
+                    rootProject.file("compat/api/src/main/kotlin")
+
+            def downloadApiDependencies = project.tasks.named("downloadDependencies")
+            downloadApiDependencies.configure {
+                doLast {
+                    delete project.file("${project.buildDir}/output/classes.jar")
+                }
+            }
+
+            project.tasks.configureEach { task ->
+                if (task.name.startsWith("compile") && task.name.endsWith("Kotlin")) {
+                    task.dependsOn(downloadApiDependencies)
+                }
+            }
+        }
     }
 }
 

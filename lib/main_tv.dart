@@ -20,8 +20,8 @@ import 'utils/utils.dart';
 
 void main() async {
   ScaledWidgetsFlutterBinding.ensureInitialized(scaleFactor: (deviceSize) => deviceSize.width / 960);
-  final initialized = await Api.initialized();
-  if (initialized ?? false) {
+  final initialized = await _initializeApi();
+  if (initialized) {
     if (kIsWeb) {
       BrowserContextMenu.disableContextMenu();
     } else {
@@ -50,7 +50,29 @@ void main() async {
       ),
     );
   } else {
-    runApp(const UpdateToLatest());
+    runApp(enhancedBuild ? const EnhancedInitializationFailed() : const UpdateToLatest());
+  }
+}
+
+Future<bool> _initializeApi() async {
+  for (var attempt = 0; attempt < 30; attempt++) {
+    if (await Api.initialized() ?? false) return true;
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+  }
+  return false;
+}
+
+class EnhancedInitializationFailed extends StatelessWidget {
+  const EnhancedInitializationFailed({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: tvTheme,
+      darkTheme: tvDarkTheme,
+      home: const Scaffold(body: Center(child: Text('Enhanced 服务初始化失败，请退出应用后重试。', textAlign: TextAlign.center))),
+    );
   }
 }
 

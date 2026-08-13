@@ -48,6 +48,19 @@ Build the Android TV debug APK:
 The APK is written under `build/app/outputs/flutter-apk/`.
 The default TV build contains both 32-bit and 64-bit ARM libraries so it also
 runs on projector firmware whose userspace is limited to `armeabi-v7a`.
+TV builds use the separate Android package `com.ghosten.player.enhanced` and
+the name `Ghosten Player Enhanced`. The upstream self-update mechanism is
+disabled so future releases remain under this fork's control.
+
+The upstream API runtime is distributed as a precompiled AAR. Its native
+libraries are reused unchanged, while `android/compat/api` provides a
+source-built Android service adapter. The adapter preserves the public
+upstream API identity under Enhanced's independent package and signing key.
+
+Release signing uses `android/app/.signing/ghosten-enhanced.jks`. Its password
+is stored in the macOS Keychain service
+`com.ghosten.player.enhanced.signing`, not in the repository. Back up the
+keystore separately; losing it prevents in-place upgrades of installed builds.
 
 ## Git remotes
 

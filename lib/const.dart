@@ -1,4 +1,5 @@
 const alphaVersion = bool.fromEnvironment('ALPHA_VERSION');
+const enhancedBuild = bool.fromEnvironment('ENHANCED_BUILD');
 const appVersion = String.fromEnvironment('BUILD_VERSION', defaultValue: 'Dev');
 const buildDate = String.fromEnvironment('BUILD_DATE', defaultValue: '2024-03-12');
 const repoAuthor = String.fromEnvironment('REPO_AUTHOR', defaultValue: 'GhostenEditor');
@@ -10,5 +11,5 @@ const ua =
 const headerUserAgent = 'User-Agent';
 const assetsLogo = 'assets/common/images/logo.png';
 const assetsNoData = 'assets/common/images/no data.png';
-const appName = 'Ghosten Player';
+const appName = enhancedBuild ? 'Ghosten Player Enhanced' : 'Ghosten Player';
 const double kQrSize = 240;
