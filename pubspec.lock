@@ -13,8 +13,8 @@ packages:
     dependency: "direct main"
     description:
       path: api
-      ref: "v0.0.9"
-      resolved-ref: "9a3ad477fd730efa968da2f83d49a148f9a440f8"
+      ref: "v0.0.10"
+      resolved-ref: "91a207c87070efb6437a2e2561b29f8c79df184d"
       url: "https://github.com/GhostenEditor/Ghosten-Player-flutter-packages.git"
     source: git
     version: "0.0.0"
@@ -46,8 +46,8 @@ packages:
     dependency: "direct main"
     description:
       path: bluetooth
-      ref: "v0.0.9"
-      resolved-ref: "9a3ad477fd730efa968da2f83d49a148f9a440f8"
+      ref: "v0.0.10"
+      resolved-ref: "91a207c87070efb6437a2e2561b29f8c79df184d"
       url: "https://github.com/GhostenEditor/Ghosten-Player-flutter-packages.git"
     source: git
     version: "0.0.0"
@@ -191,8 +191,8 @@ packages:
     dependency: "direct main"
     description:
       path: file_picker
-      ref: "v0.0.9"
-      resolved-ref: "9a3ad477fd730efa968da2f83d49a148f9a440f8"
+      ref: "v0.0.10"
+      resolved-ref: "91a207c87070efb6437a2e2561b29f8c79df184d"
       url: "https://github.com/GhostenEditor/Ghosten-Player-flutter-packages.git"
     source: git
     version: "0.0.0"
@@ -404,8 +404,8 @@ packages:
     dependency: "direct main"
     description:
       path: logger
-      ref: "v0.0.9"
-      resolved-ref: "9a3ad477fd730efa968da2f83d49a148f9a440f8"
+      ref: "v0.0.10"
+      resolved-ref: "91a207c87070efb6437a2e2561b29f8c79df184d"
       url: "https://github.com/GhostenEditor/Ghosten-Player-flutter-packages.git"
     source: git
     version: "0.0.1"
@@ -955,8 +955,8 @@ packages:
     dependency: "direct main"
     description:
       path: video_player
-      ref: "v0.0.9"
-      resolved-ref: "9a3ad477fd730efa968da2f83d49a148f9a440f8"
+      ref: "v0.0.10"
+      resolved-ref: "91a207c87070efb6437a2e2561b29f8c79df184d"
       url: "https://github.com/GhostenEditor/Ghosten-Player-flutter-packages.git"
     source: git
     version: "0.0.0"
