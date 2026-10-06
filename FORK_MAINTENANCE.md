@@ -78,11 +78,13 @@ Device checks on the S901 projector:
 1. Official and fork packages remain installed side by side.
 2. TrueHD and DTS audio tracks are selectable.
 3. Selected audio and subtitle tracks survive app restart.
-4. `Thor The Dark World` bilingual ASS subtitles render; this file contains
+4. A selected subtitle size (`60%` through `140%`) survives app restart and
+   affects both embedded ASS and ordinary text subtitles.
+5. `Thor The Dark World` bilingual ASS subtitles render; this file contains
    invalid `PlayResX: 0` and `PlayResY: 0` metadata.
-5. Subtitle tracks with valid play resolutions are unchanged.
-6. The build is Release/AOT and does not have the `DEBUGGABLE` package flag.
-7. TMDB scraping works after the user supplies a TMDB v3 API key in TV
+6. Subtitle tracks with valid play resolutions are unchanged.
+7. The build is Release/AOT and does not have the `DEBUGGABLE` package flag.
+8. TMDB scraping works after the user supplies a TMDB v3 API key in TV
    settings. Never log or commit that key.
 
 ## Upstream sync
