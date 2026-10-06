@@ -246,6 +246,7 @@
   "subtitleFormItemLabelType": "字幕类型",
   "subtitleFormItemLabelUrl": "地址",
   "subtitleSetting": "字幕设置",
+  "subtitleSettingFontSize": "字幕大小",
   "subtitleSettingBackgroundColor": "背景颜色",
   "subtitleSettingEdgeColor": "边缘颜色",
   "subtitleSettingExample": "字幕样式示例",

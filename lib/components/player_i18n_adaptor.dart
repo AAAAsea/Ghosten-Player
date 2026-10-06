@@ -27,6 +27,7 @@ class PlayerI18nAdaptor extends StatelessWidget {
       extensionRendererModeLabel: AppLocalizations.of(context)!.audioDecoderLabel,
       playerShowThumbnails: AppLocalizations.of(context)!.playerShowThumbnails,
       subtitleSetting: AppLocalizations.of(context)!.subtitleSetting,
+      subtitleSettingFontSize: AppLocalizations.of(context)!.subtitleSettingFontSize,
       subtitleSettingExample: AppLocalizations.of(context)!.subtitleSettingExample,
       subtitleSettingForegroundColor: AppLocalizations.of(context)!.subtitleSettingForegroundColor,
       subtitleSettingBackgroundColor: AppLocalizations.of(context)!.subtitleSettingBackgroundColor,

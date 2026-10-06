@@ -1568,6 +1568,12 @@ abstract class AppLocalizations {
   /// **'Subtitle Setting'**
   String get subtitleSetting;
 
+  /// No description provided for @subtitleSettingFontSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle size'**
+  String get subtitleSettingFontSize;
+
   /// No description provided for @subtitleSettingBackgroundColor.
   ///
   /// In en, this message translates to:

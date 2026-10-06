@@ -942,6 +942,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subtitleSetting => 'Subtitle Setting';
 
   @override
+  String get subtitleSettingFontSize => 'Subtitle size';
+
+  @override
   String get subtitleSettingBackgroundColor => 'Background Color';
 
   @override

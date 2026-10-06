@@ -1232,6 +1232,8 @@ class PlayerSubtitleSettings extends StatefulWidget {
 }
 
 class _PlayerSubtitleSettingsState extends State<PlayerSubtitleSettings> {
+  static const fontScaleOptions = [60, 80, 100, 120, 140];
+
   final subtitleStyles = const [
     SubtitleSettings(
       foregroundColor: Colors.white,
@@ -1264,67 +1266,83 @@ class _PlayerSubtitleSettingsState extends State<PlayerSubtitleSettings> {
     final localizations = PlayerLocalizations.of(context);
     return PlayerSubSettings(
       title: localizations.subtitleSetting,
-      items:
-          subtitleStyles
-              .map(
-                (style) => Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: Focusable(
-                    height: 140,
-                    onTap: () {
-                      Navigator.of(context).pop(style.toJson());
-                    },
+      items: [
+        ListTile(title: Text(localizations.subtitleSettingFontSize), dense: true),
+        ...fontScaleOptions.map(
+          (fontScalePercent) => RadioSettingItem<int>(
+            autofocus: fontScalePercent == widget.subtitleSettings.fontScalePercent,
+            value: fontScalePercent,
+            groupValue: widget.subtitleSettings.fontScalePercent,
+            title: Text('$fontScalePercent%'),
+            onChanged: (value) {
+              if (value != null) {
+                Navigator.of(context).pop(widget.subtitleSettings.copyWith(fontScalePercent: value).toJson());
+              }
+            },
+          ),
+        ),
+        ListTile(title: Text(localizations.subtitleSettingExample), dense: true),
+        ...subtitleStyles.map((baseStyle) {
+          final style = baseStyle.copyWith(fontScalePercent: widget.subtitleSettings.fontScalePercent);
+          final previewFontSize = 18 * style.fontScalePercent / 100;
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Focusable(
+              height: 140,
+              onTap: () {
+                Navigator.of(context).pop(style.toJson());
+              },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Ink(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/common/images/subtitle_bg.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: const Alignment(0, 0.9),
                     child: Stack(
-                      fit: StackFit.expand,
                       children: [
-                        Ink(
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(8),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/common/images/subtitle_bg.jpg'),
-                              fit: BoxFit.cover,
-                            ),
+                        Text(
+                          localizations.subtitleSettingExample,
+                          style: TextStyle(
+                            fontSize: previewFontSize,
+                            backgroundColor: style.backgroundColor,
+                            foreground:
+                                Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 2
+                                  ..color = style.edgeColor,
                           ),
                         ),
-                        Align(
-                          alignment: const Alignment(0, 0.9),
-                          child: Stack(
-                            children: [
-                              Text(
-                                localizations.subtitleSettingExample,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  backgroundColor: style.backgroundColor,
-                                  foreground:
-                                      Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 2
-                                        ..color = style.edgeColor,
-                                ),
-                              ),
-                              Text(
-                                localizations.subtitleSettingExample,
-                                style: TextStyle(fontSize: 18, color: style.foregroundColor),
-                              ),
-                            ],
-                          ),
+                        Text(
+                          localizations.subtitleSettingExample,
+                          style: TextStyle(fontSize: previewFontSize, color: style.foregroundColor),
                         ),
-                        if (widget.subtitleSettings == style)
-                          Align(
-                            alignment: const Alignment(0.9, -0.9),
-                            child: Container(
-                              decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
-                              padding: const EdgeInsets.all(4),
-                              child: const Icon(Icons.check_rounded),
-                            ),
-                          ),
                       ],
                     ),
                   ),
-                ),
-              )
-              .toList(),
+                  if (widget.subtitleSettings == style)
+                    Align(
+                      alignment: const Alignment(0.9, -0.9),
+                      child: Container(
+                        decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
+                        padding: const EdgeInsets.all(4),
+                        child: const Icon(Icons.check_rounded),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ],
     );
   }
 }

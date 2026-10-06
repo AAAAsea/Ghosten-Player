@@ -65,7 +65,7 @@ dependencies:
     git:
       url: https://github.com/AAAAsea/Ghosten-Player-flutter-packages.git
       path: video_player
-      ref: 4210e3fecb80154bb95cc609eeaa3e2ae3846705
+      ref: e962f940a28a24cc525aedfcc233645578c0fd81
   volume_controller: ^3.4.1
   webview_cookie_manager_plus: ^2.0.17
   webview_flutter: ^4.13.1

@@ -927,6 +927,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get subtitleSetting => '字幕设置';
 
   @override
+  String get subtitleSettingFontSize => '字幕大小';
+
+  @override
   String get subtitleSettingBackgroundColor => '背景颜色';
 
   @override

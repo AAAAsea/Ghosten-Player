@@ -245,6 +245,7 @@
   "subtitleFormItemLabelType": "Subtitle Type",
   "subtitleFormItemLabelUrl": "URL",
   "subtitleSetting": "Subtitle Setting",
+  "subtitleSettingFontSize": "Subtitle size",
   "subtitleSettingBackgroundColor": "Background Color",
   "subtitleSettingEdgeColor": "Edge Color",
   "subtitleSettingExample": "Subtitle style example",
