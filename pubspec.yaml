@@ -63,9 +63,9 @@ dependencies:
   url_launcher: ^6.3.2
   video_player:
     git:
-      url: https://github.com/GhostenEditor/Ghosten-Player-flutter-packages.git
+      url: https://github.com/AAAAsea/Ghosten-Player-flutter-packages.git
       path: video_player
-      ref: v0.0.10
+      ref: 289d1ea18cf51451d52c50f468f3aea03a0264b6
   volume_controller: ^3.4.1
   webview_cookie_manager_plus: ^2.0.17
   webview_flutter: ^4.13.1

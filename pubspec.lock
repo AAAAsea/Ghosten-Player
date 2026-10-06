@@ -955,9 +955,9 @@ packages:
     dependency: "direct main"
     description:
       path: video_player
-      ref: "v0.0.10"
-      resolved-ref: "91a207c87070efb6437a2e2561b29f8c79df184d"
-      url: "https://github.com/GhostenEditor/Ghosten-Player-flutter-packages.git"
+      ref: "289d1ea18cf51451d52c50f468f3aea03a0264b6"
+      resolved-ref: "289d1ea18cf51451d52c50f468f3aea03a0264b6"
+      url: "https://github.com/AAAAsea/Ghosten-Player-flutter-packages.git"
     source: git
     version: "0.0.0"
   visibility_detector:
