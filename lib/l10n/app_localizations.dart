@@ -1502,6 +1502,24 @@ abstract class AppLocalizations {
   /// **'TMDB Enabled'**
   String get settingsItemTmdbEnabled;
 
+  /// No description provided for @settingsItemTmdbApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'TMDB API Key'**
+  String get settingsItemTmdbApiKey;
+
+  /// No description provided for @settingsItemTmdbApiKeyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'TMDB v3 API key used for metadata scraping. Stored only on this device.'**
+  String get settingsItemTmdbApiKeyDescription;
+
+  /// No description provided for @settingsItemTmdbApiKeySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'TMDB API key saved'**
+  String get settingsItemTmdbApiKeySaved;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:

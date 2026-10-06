@@ -894,6 +894,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsItemTmdbEnabled => 'TMDB 启用';
 
   @override
+  String get settingsItemTmdbApiKey => 'TMDB API Key';
+
+  @override
+  String get settingsItemTmdbApiKeyDescription => '用于媒体刮削的 TMDB v3 API Key，仅保存在本设备。';
+
+  @override
+  String get settingsItemTmdbApiKeySaved => 'TMDB API Key 已保存';
+
+  @override
   String get settingsTitle => '设置';
 
   @override

@@ -6,6 +6,9 @@ import 'package:video_player/player.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/user_config.dart';
 import '../../utils/utils.dart';
+import '../../validators/validators.dart';
+import '../components/filled_button.dart';
+import '../components/keyboard_reopen.dart';
 import '../components/setting.dart';
 import '../components/text_field_focus.dart';
 import '../utils/notification.dart';
@@ -131,6 +134,79 @@ class SettingsScraperBehaviorPage extends StatefulWidget {
   State<SettingsScraperBehaviorPage> createState() => _SettingsScraperBehaviorPageState();
 }
 
+class SettingsTmdbApiKeyPage extends StatefulWidget {
+  const SettingsTmdbApiKeyPage({super.key, required this.initialValue});
+
+  final String initialValue;
+
+  @override
+  State<SettingsTmdbApiKeyPage> createState() => _SettingsTmdbApiKeyPageState();
+}
+
+class _SettingsTmdbApiKeyPageState extends State<SettingsTmdbApiKeyPage> {
+  final _formKey = GlobalKey<FormState>();
+  late final _controller = TextEditingController(text: widget.initialValue);
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return SettingPage(
+      title: localizations.settingsItemTmdbApiKey,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        child: Form(
+          key: _formKey,
+          child: KeyboardReopen(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              spacing: 16,
+              children: [
+                TextFormField(
+                  controller: _controller,
+                  autofocus: true,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.key_rounded),
+                    border: const UnderlineInputBorder(),
+                    labelText: localizations.settingsItemTmdbApiKey,
+                    helperText: localizations.settingsItemTmdbApiKeyDescription,
+                  ),
+                  validator: (value) => requiredValidator(context, value?.trim()),
+                  onFieldSubmitted: (_) => _save(),
+                ),
+                const Spacer(),
+                TVFilledButton(
+                  autofocus: widget.initialValue.isNotEmpty,
+                  onPressed: _saving ? null : _save,
+                  child: Text(localizations.buttonConfirm),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _save() async {
+    if (_saving || !_formKey.currentState!.validate()) return;
+    setState(() => _saving = true);
+    await context.read<UserConfig>().setTmdbApiKey(_controller.text);
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.settingsItemTmdbApiKeySaved)));
+    Navigator.of(context).pop();
+  }
+}
+
 class _SettingsScraperBehaviorPageState extends State<SettingsScraperBehaviorPage> {
   late ScraperBehavior behavior = widget.behavior;
 
@@ -253,6 +329,7 @@ class _ScraperSettingSectionState extends State<_ScraperSettingSection> {
 
   @override
   Widget build(BuildContext context) {
+    final userConfig = context.watch<UserConfig>();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -270,6 +347,16 @@ class _ScraperSettingSectionState extends State<_ScraperSettingSection> {
               widget.onChanged(widget.settingScraper.copyWith(behavior: behavior));
             }
           },
+        ),
+        ButtonSettingItem(
+          title: Text(AppLocalizations.of(context)!.settingsItemTmdbApiKey),
+          subtitle: Text(AppLocalizations.of(context)!.settingsItemTmdbApiKeyDescription),
+          leading: const Icon(Icons.key_rounded),
+          trailing:
+              userConfig.tmdbApiKey.isEmpty
+                  ? Text(AppLocalizations.of(context)!.tagUnknown)
+                  : const Icon(Icons.check_circle_outline_rounded),
+          onTap: () => navigateToSlideLeft(context, SettingsTmdbApiKeyPage(initialValue: userConfig.tmdbApiKey)),
         ),
         SwitchSettingItem(
           title: Badge(label: const Text('Alpha'), child: Text(AppLocalizations.of(context)!.settingsItemNfoEnabled)),

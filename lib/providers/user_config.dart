@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:api/api.dart';
 import 'package:flutter/material.dart';
 import 'package:scaled_app/scaled_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,6 +52,7 @@ class UserConfig extends ChangeNotifier {
       mpvVersion = prefs.getString('playerConfig.mpvVersion'),
       autoForceLandscape = prefs.getBool('playerConfig.autoForceLandscape') ?? false,
       displayScale = prefs.getDouble('system.displayScale') ?? 1,
+      tmdbApiKey = prefs.getString('scraper.tmdbApiKey') ?? '',
       showPerformanceOverlay = false;
   final SharedPreferences prefs;
   SystemLanguage language;
@@ -65,11 +67,28 @@ class UserConfig extends ChangeNotifier {
   bool autoForceLandscape;
   bool autoPip;
   double displayScale;
+  String tmdbApiKey;
   bool showPerformanceOverlay;
 
   static Future<UserConfig> init() async {
     final prefs = await SharedPreferences.getInstance();
-    return UserConfig._fromPrefs(prefs);
+    final config = UserConfig._fromPrefs(prefs);
+    if (config.tmdbApiKey.isNotEmpty) {
+      await Api.setTmdbApiKey(config.tmdbApiKey);
+    }
+    return config;
+  }
+
+  Future<void> setTmdbApiKey(String value) async {
+    final key = value.trim();
+    tmdbApiKey = key;
+    if (key.isEmpty) {
+      await prefs.remove('scraper.tmdbApiKey');
+    } else {
+      await prefs.setString('scraper.tmdbApiKey', key);
+    }
+    await Api.setTmdbApiKey(key);
+    notifyListeners();
   }
 
   void setAutoUpdate(AutoUpdateFrequency f) {

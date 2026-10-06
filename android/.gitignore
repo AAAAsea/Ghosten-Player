@@ -4,7 +4,9 @@ gradle-wrapper.jar
 /gradlew
 /gradlew.bat
 /local.properties
-/app/libs
+/app/libs/*
+!/app/libs/README.md
+!/app/libs/lib-decoder-ffmpeg-release.aar
 GeneratedPluginRegistrant.java
 
 # Remember to never publicly share your keystore.

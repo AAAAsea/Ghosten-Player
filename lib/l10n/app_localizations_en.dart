@@ -907,6 +907,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsItemTmdbEnabled => 'TMDB Enabled';
 
   @override
+  String get settingsItemTmdbApiKey => 'TMDB API Key';
+
+  @override
+  String get settingsItemTmdbApiKeyDescription =>
+      'TMDB v3 API key used for metadata scraping. Stored only on this device.';
+
+  @override
+  String get settingsItemTmdbApiKeySaved => 'TMDB API key saved';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
