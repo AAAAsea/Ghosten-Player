@@ -930,6 +930,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get subtitleSettingFontSize => '字幕大小';
 
   @override
+  String get subtitleSettingPosition => '字幕位置';
+
+  @override
+  String get subtitleSettingPositionDefault => '跟随字幕默认';
+
+  @override
+  String subtitleSettingPositionFromBottom(Object percent) {
+    return '距底部 $percent%';
+  }
+
+  @override
+  String get subtitleSettingPositionHint => '带定位信息的 ASS 字幕仍按内置布局显示';
+
+  @override
+  String get subtitleSettingStyle => '字幕样式';
+
+  @override
   String get subtitleSettingBackgroundColor => '背景颜色';
 
   @override

@@ -1232,14 +1232,30 @@ class PlayerSubtitleSettings extends StatefulWidget {
 }
 
 class _PlayerSubtitleSettingsState extends State<PlayerSubtitleSettings> {
-  static const fontScaleOptions = [60, 80, 100, 120, 140];
+  static const fontScaleOptions = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 160];
+  static const bottomPaddingOptions = [-1, 5, 10, 15, 20, 25, 30];
+
+  late SubtitleSettings _settings = widget.subtitleSettings;
 
   final subtitleStyles = const [
+    SubtitleSettings.defaultSettings,
     SubtitleSettings(
       foregroundColor: Colors.white,
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xB3000000),
       windowColor: Colors.transparent,
       edgeColor: Colors.transparent,
+    ),
+    SubtitleSettings(
+      foregroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
+      windowColor: Colors.transparent,
+      edgeColor: Colors.black,
+    ),
+    SubtitleSettings(
+      foregroundColor: Color(0xFFFFD54F),
+      backgroundColor: Colors.transparent,
+      windowColor: Colors.transparent,
+      edgeColor: Colors.black,
     ),
     SubtitleSettings(
       foregroundColor: Colors.black,
@@ -1253,12 +1269,6 @@ class _PlayerSubtitleSettingsState extends State<PlayerSubtitleSettings> {
       windowColor: Colors.transparent,
       edgeColor: Colors.white,
     ),
-    SubtitleSettings(
-      foregroundColor: Colors.white,
-      backgroundColor: Colors.transparent,
-      windowColor: Colors.transparent,
-      edgeColor: Colors.black,
-    ),
   ];
 
   @override
@@ -1267,83 +1277,192 @@ class _PlayerSubtitleSettingsState extends State<PlayerSubtitleSettings> {
     return PlayerSubSettings(
       title: localizations.subtitleSetting,
       items: [
-        ListTile(title: Text(localizations.subtitleSettingFontSize), dense: true),
-        ...fontScaleOptions.map(
-          (fontScalePercent) => RadioSettingItem<int>(
-            autofocus: fontScalePercent == widget.subtitleSettings.fontScalePercent,
-            value: fontScalePercent,
-            groupValue: widget.subtitleSettings.fontScalePercent,
-            title: Text('$fontScalePercent%'),
-            onChanged: (value) {
-              if (value != null) {
-                Navigator.of(context).pop(widget.subtitleSettings.copyWith(fontScalePercent: value).toJson());
-              }
-            },
-          ),
+        Padding(padding: const EdgeInsets.only(bottom: 12), child: _buildPreview(_settings, height: 180)),
+        ButtonSettingItem(
+          autofocus: true,
+          leading: const Icon(Icons.format_size_rounded),
+          title: Text(localizations.subtitleSettingFontSize),
+          trailing: Text('${_settings.fontScalePercent}%'),
+          onTap: () => _selectFontScale(context),
         ),
-        ListTile(title: Text(localizations.subtitleSettingExample), dense: true),
-        ...subtitleStyles.map((baseStyle) {
-          final style = baseStyle.copyWith(fontScalePercent: widget.subtitleSettings.fontScalePercent);
-          final previewFontSize = 18 * style.fontScalePercent / 100;
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: Focusable(
-              height: 140,
-              onTap: () {
-                Navigator.of(context).pop(style.toJson());
-              },
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Ink(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(8),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/common/images/subtitle_bg.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: const Alignment(0, 0.9),
-                    child: Stack(
-                      children: [
-                        Text(
-                          localizations.subtitleSettingExample,
-                          style: TextStyle(
-                            fontSize: previewFontSize,
-                            backgroundColor: style.backgroundColor,
-                            foreground:
-                                Paint()
-                                  ..style = PaintingStyle.stroke
-                                  ..strokeWidth = 2
-                                  ..color = style.edgeColor,
-                          ),
-                        ),
-                        Text(
-                          localizations.subtitleSettingExample,
-                          style: TextStyle(fontSize: previewFontSize, color: style.foregroundColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (widget.subtitleSettings == style)
-                    Align(
-                      alignment: const Alignment(0.9, -0.9),
-                      child: Container(
-                        decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
-                        padding: const EdgeInsets.all(4),
-                        child: const Icon(Icons.check_rounded),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          );
-        }),
+        ButtonSettingItem(
+          leading: const Icon(Icons.vertical_align_bottom_rounded),
+          title: Text(localizations.subtitleSettingPosition),
+          subtitle: Text(localizations.subtitleSettingPositionHint),
+          trailing: Text(_positionLabel(localizations, _settings.bottomPaddingPercent)),
+          onTap: () => _selectPosition(context),
+        ),
+        ButtonSettingItem(
+          leading: const Icon(Icons.palette_outlined),
+          title: Text(localizations.subtitleSettingStyle),
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => _selectStyle(context),
+        ),
+        const Divider(),
+        ButtonSettingItem(
+          leading: const Icon(Icons.restart_alt_rounded),
+          title: Text(localizations.buttonReset),
+          onTap: () => setState(() => _settings = SubtitleSettings.defaultSettings),
+        ),
+        ButtonSettingItem(
+          leading: const Icon(Icons.check_rounded),
+          title: Text(localizations.buttonConfirm),
+          onTap: () => Navigator.of(context).pop(_settings.toJson()),
+        ),
       ],
     );
+  }
+
+  Future<void> _selectFontScale(BuildContext context) {
+    final localizations = PlayerLocalizations.of(context);
+    return Navigator.of(context).push(
+      FadeInPageRoute(
+        builder:
+            (context) => PlayerSubSettings(
+              title: localizations.subtitleSettingFontSize,
+              items:
+                  fontScaleOptions
+                      .map(
+                        (value) => RadioSettingItem<int>(
+                          autofocus: value == _settings.fontScalePercent,
+                          value: value,
+                          groupValue: _settings.fontScalePercent,
+                          title: Text('$value%'),
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setState(() => _settings = _settings.copyWith(fontScalePercent: value));
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      )
+                      .toList(),
+            ),
+      ),
+    );
+  }
+
+  Future<void> _selectPosition(BuildContext context) {
+    final localizations = PlayerLocalizations.of(context);
+    return Navigator.of(context).push(
+      FadeInPageRoute(
+        builder:
+            (context) => PlayerSubSettings(
+              title: localizations.subtitleSettingPosition,
+              items: [
+                ListTile(title: Text(localizations.subtitleSettingPositionHint), dense: true),
+                ...bottomPaddingOptions.map(
+                  (value) => RadioSettingItem<int>(
+                    autofocus: value == _settings.bottomPaddingPercent,
+                    value: value,
+                    groupValue: _settings.bottomPaddingPercent,
+                    title: Text(_positionLabel(localizations, value)),
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() => _settings = _settings.copyWith(bottomPaddingPercent: value));
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ],
+            ),
+      ),
+    );
+  }
+
+  Future<void> _selectStyle(BuildContext context) {
+    final localizations = PlayerLocalizations.of(context);
+    return Navigator.of(context).push(
+      FadeInPageRoute(
+        builder:
+            (context) => PlayerSubSettings(
+              title: localizations.subtitleSettingStyle,
+              items:
+                  subtitleStyles.map((baseStyle) {
+                    final style = baseStyle.copyWith(
+                      fontScalePercent: _settings.fontScalePercent,
+                      bottomPaddingPercent: _settings.bottomPaddingPercent,
+                    );
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Focusable(
+                        height: 140,
+                        onTap: () {
+                          setState(() => _settings = style);
+                          Navigator.of(context).pop();
+                        },
+                        child: _buildPreview(style, selected: _settings == style),
+                      ),
+                    );
+                  }).toList(),
+            ),
+      ),
+    );
+  }
+
+  Widget _buildPreview(SubtitleSettings style, {double? height, bool selected = false}) {
+    final localizations = PlayerLocalizations.of(context);
+    final previewFontSize = 22 * style.fontScalePercent / 100;
+    return SizedBox(
+      height: height,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Ink(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(8),
+              image: const DecorationImage(
+                image: AssetImage('assets/common/images/subtitle_bg.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment(0, _previewAlignmentY(style)),
+            child: Stack(
+              children: [
+                Text(
+                  localizations.subtitleSettingExample,
+                  style: TextStyle(
+                    fontSize: previewFontSize,
+                    backgroundColor: style.backgroundColor,
+                    foreground:
+                        Paint()
+                          ..style = PaintingStyle.stroke
+                          ..strokeWidth = 2
+                          ..color = style.edgeColor,
+                  ),
+                ),
+                Text(
+                  localizations.subtitleSettingExample,
+                  style: TextStyle(fontSize: previewFontSize, color: style.foregroundColor),
+                ),
+              ],
+            ),
+          ),
+          if (selected)
+            Align(
+              alignment: const Alignment(0.9, -0.9),
+              child: Container(
+                decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
+                padding: const EdgeInsets.all(4),
+                child: const Icon(Icons.check_rounded),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _positionLabel(PlayerLocalizations localizations, int bottomPaddingPercent) {
+    return bottomPaddingPercent < 0
+        ? localizations.subtitleSettingPositionDefault
+        : localizations.subtitleSettingPositionFromBottom(bottomPaddingPercent);
+  }
+
+  double _previewAlignmentY(SubtitleSettings style) {
+    if (style.bottomPaddingPercent < 0) return 0.9;
+    return (1 - (2 * style.bottomPaddingPercent / 100)).clamp(-1.0, 1.0);
   }
 }
 

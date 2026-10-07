@@ -945,6 +945,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subtitleSettingFontSize => 'Subtitle size';
 
   @override
+  String get subtitleSettingPosition => 'Subtitle position';
+
+  @override
+  String get subtitleSettingPositionDefault => 'Use subtitle default';
+
+  @override
+  String subtitleSettingPositionFromBottom(Object percent) {
+    return '$percent% from bottom';
+  }
+
+  @override
+  String get subtitleSettingPositionHint => 'ASS subtitles with authored positioning keep their original layout';
+
+  @override
+  String get subtitleSettingStyle => 'Subtitle style';
+
+  @override
   String get subtitleSettingBackgroundColor => 'Background Color';
 
   @override

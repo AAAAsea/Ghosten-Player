@@ -1574,6 +1574,36 @@ abstract class AppLocalizations {
   /// **'Subtitle size'**
   String get subtitleSettingFontSize;
 
+  /// No description provided for @subtitleSettingPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle position'**
+  String get subtitleSettingPosition;
+
+  /// No description provided for @subtitleSettingPositionDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Use subtitle default'**
+  String get subtitleSettingPositionDefault;
+
+  /// No description provided for @subtitleSettingPositionFromBottom.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% from bottom'**
+  String subtitleSettingPositionFromBottom(Object percent);
+
+  /// No description provided for @subtitleSettingPositionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ASS subtitles with authored positioning keep their original layout'**
+  String get subtitleSettingPositionHint;
+
+  /// No description provided for @subtitleSettingStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle style'**
+  String get subtitleSettingStyle;
+
   /// No description provided for @subtitleSettingBackgroundColor.
   ///
   /// In en, this message translates to:
