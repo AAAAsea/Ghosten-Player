@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,8 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/shortcut_tv.dart';
+import '../providers/user_config.dart';
+import '../services/webdav_library_auto_refresh.dart';
 import '../utils/utils.dart';
 import 'components/clock.dart';
 import 'components/icon_button.dart';
@@ -22,12 +26,39 @@ class TVHomePage extends StatefulWidget {
   State<TVHomePage> createState() => _HomeState();
 }
 
-class _HomeState extends State<TVHomePage> {
+class _HomeState extends State<TVHomePage> with WidgetsBindingObserver {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _navigatorKey = GlobalKey<NavigatorState>();
+  WebDavLibraryAutoRefresh? _webDavAutoRefresh;
+  Timer? _autoRefreshTimer;
+  int _movieLibraryRevision = 0;
   int tabIndex = 0;
   bool reverse = false;
   bool confirmed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _webDavAutoRefresh = WebDavLibraryAutoRefresh(prefs: context.read<UserConfig>().prefs);
+      _autoRefreshTimer = Timer.periodic(const Duration(minutes: 5), (_) => unawaited(_refreshWebDavMovies()));
+      unawaited(_refreshWebDavMovies());
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _autoRefreshTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) unawaited(_refreshWebDavMovies());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +92,7 @@ class _HomeState extends State<TVHomePage> {
             }
             return !canPop;
           },
-          onTabChange:
-              (index) => setState(() {
-                reverse = true;
-                tabIndex = index;
-              }),
+          onTabChange: _onTabChange,
         ),
         endDrawer: NavigatorPopHandler(
           onPopWithResult: (_) => _navigatorKey.currentState!.maybePop(),
@@ -92,13 +119,30 @@ class _HomeState extends State<TVHomePage> {
               ),
           child: switch (tabIndex) {
             0 => TVListPage(endDrawerNavigatorKey: _navigatorKey),
-            1 => MovieListPage(endDrawerNavigatorKey: _navigatorKey),
+            1 => MovieListPage(key: ValueKey(_movieLibraryRevision), endDrawerNavigatorKey: _navigatorKey),
             2 => const LiveListPage(),
             _ => const SizedBox(),
           },
         ),
       ),
     );
+  }
+
+  void _onTabChange(int index) {
+    setState(() {
+      reverse = true;
+      tabIndex = index;
+    });
+    if (index == 1) unawaited(_refreshWebDavMovies());
+  }
+
+  Future<void> _refreshWebDavMovies() async {
+    final refresher = _webDavAutoRefresh;
+    if (refresher == null || !mounted || !context.read<UserConfig>().webDavAutoRefresh) return;
+    if (ModalRoute.of(context)?.isCurrent == false) return;
+
+    final refreshed = await refresher.refreshIfDue();
+    if (refreshed && mounted) setState(() => _movieLibraryRevision++);
   }
 }
 

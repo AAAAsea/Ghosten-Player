@@ -816,6 +816,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsItemDataSync => 'Data Sync';
 
   @override
+  String get settingsItemWebDavAutoRefresh => 'Auto-refresh WebDAV movies';
+
+  @override
+  String get settingsItemWebDavAutoRefreshDescription =>
+      'Incremental sync on launch/resume and every 5 minutes; metadata scraping is not started';
+
+  @override
   String get settingsItemDisplaySettings => 'Display Settings';
 
   @override

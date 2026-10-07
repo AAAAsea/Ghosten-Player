@@ -1340,6 +1340,18 @@ abstract class AppLocalizations {
   /// **'Data Sync'**
   String get settingsItemDataSync;
 
+  /// No description provided for @settingsItemWebDavAutoRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-refresh WebDAV movies'**
+  String get settingsItemWebDavAutoRefresh;
+
+  /// No description provided for @settingsItemWebDavAutoRefreshDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Incremental sync on launch/resume and every 5 minutes; metadata scraping is not started'**
+  String get settingsItemWebDavAutoRefreshDescription;
+
   /// No description provided for @settingsItemDisplaySettings.
   ///
   /// In en, this message translates to:

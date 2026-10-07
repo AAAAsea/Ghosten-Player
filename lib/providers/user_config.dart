@@ -51,6 +51,7 @@ class UserConfig extends ChangeNotifier {
       playerType = PlayerType.fromString(prefs.getString('playerConfig.playerType')),
       mpvVersion = prefs.getString('playerConfig.mpvVersion'),
       autoForceLandscape = prefs.getBool('playerConfig.autoForceLandscape') ?? false,
+      webDavAutoRefresh = prefs.getBool('library.webdavAutoRefresh') ?? true,
       displayScale = prefs.getDouble('system.displayScale') ?? 1,
       tmdbApiKey = prefs.getString('scraper.tmdbApiKey') ?? '',
       showPerformanceOverlay = false;
@@ -66,6 +67,7 @@ class UserConfig extends ChangeNotifier {
   bool autoPlay;
   bool autoForceLandscape;
   bool autoPip;
+  bool webDavAutoRefresh;
   double displayScale;
   String tmdbApiKey;
   bool showPerformanceOverlay;
@@ -122,6 +124,12 @@ class UserConfig extends ChangeNotifier {
     autoPip = a;
     notifyListeners();
     prefs.setBool('playerConfig.autoPip', autoPip);
+  }
+
+  void setWebDavAutoRefresh(bool enabled) {
+    webDavAutoRefresh = enabled;
+    prefs.setBool('library.webdavAutoRefresh', enabled);
+    notifyListeners();
   }
 
   void setTheme(ThemeMode themeMode) {

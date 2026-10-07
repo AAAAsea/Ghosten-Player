@@ -79,6 +79,20 @@ class _SystemSettingsOtherState extends State<SystemSettingsOther> {
             },
           ),
           ListTile(title: Text(AppLocalizations.of(context)!.settingsItemDataSettings), dense: true),
+          SwitchSettingItem(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppLocalizations.of(context)!.settingsItemWebDavAutoRefresh),
+                Text(
+                  AppLocalizations.of(context)!.settingsItemWebDavAutoRefreshDescription,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+            value: userConfig.webDavAutoRefresh,
+            onChanged: userConfig.setWebDavAutoRefresh,
+          ),
           ButtonSettingItem(
             title: Text(AppLocalizations.of(context)!.settingsItemDataSync),
             leading: const Icon(Icons.sync),

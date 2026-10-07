@@ -208,6 +208,8 @@
   "settingsItemDataReset": "数据重置",
   "settingsItemDataSettings": "数据设置",
   "settingsItemDataSync": "数据同步",
+  "settingsItemWebDavAutoRefresh": "自动刷新 WebDAV 电影目录",
+  "settingsItemWebDavAutoRefreshDescription": "启动、回到前台及每 5 分钟增量同步一次，不会触发刮削",
   "settingsItemDisplaySettings": "显示设置",
   "settingsItemDisplaySize": "显示大小",
   "settingsItemDownload": "下载管理",

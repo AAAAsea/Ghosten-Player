@@ -127,6 +127,12 @@ class _SystemSettingsOtherState extends State<SystemSettingsOther> {
             },
           ),
           ListTile(title: Text(AppLocalizations.of(context)!.settingsItemDataSettings), dense: true),
+          SwitchListTile(
+            title: Text(AppLocalizations.of(context)!.settingsItemWebDavAutoRefresh),
+            subtitle: Text(AppLocalizations.of(context)!.settingsItemWebDavAutoRefreshDescription),
+            value: userConfig.webDavAutoRefresh,
+            onChanged: userConfig.setWebDavAutoRefresh,
+          ),
           ListTile(
             title: Text(AppLocalizations.of(context)!.settingsItemDataSync),
             leading: const Icon(Icons.sync),

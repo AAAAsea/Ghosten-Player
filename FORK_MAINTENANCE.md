@@ -57,8 +57,8 @@ private local backup. Never commit keystores or passwords.
 To publish, tag the tested `fork-main` commit:
 
 ```bash
-git tag v2.4.7-fork.6
-git push origin v2.4.7-fork.6
+git tag v2.4.7-fork.7
+git push origin v2.4.7-fork.7
 ```
 
 The fork release workflow builds signed TV APKs for `armeabi-v7a` and
@@ -90,6 +90,10 @@ Device checks on the S901 projector:
 8. The build is Release/AOT and does not have the `DEBUGGABLE` package flag.
 9. TMDB scraping works after the user supplies a TMDB v3 API key in TV
    settings. Never log or commit that key.
+10. With automatic WebDAV movie refresh enabled, app launch/resume and the
+    five-minute foreground timer enqueue only incremental sync tasks for
+    WebDAV movie libraries. They must not enqueue scraper tasks or duplicate an
+    already-running sync. The movie page reloads after the sync settles.
 
 ## Upstream sync
 

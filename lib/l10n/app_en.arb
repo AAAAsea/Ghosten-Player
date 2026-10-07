@@ -207,6 +207,8 @@
   "settingsItemDataReset": "Data Reset",
   "settingsItemDataSettings": "Data Settings",
   "settingsItemDataSync": "Data Sync",
+  "settingsItemWebDavAutoRefresh": "Auto-refresh WebDAV movies",
+  "settingsItemWebDavAutoRefreshDescription": "Incremental sync on launch/resume and every 5 minutes; metadata scraping is not started",
   "settingsItemDisplaySettings": "Display Settings",
   "settingsItemDisplaySize": "Display Size",
   "settingsItemDownload": "Download Management",

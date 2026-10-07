@@ -803,6 +803,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsItemDataSync => '数据同步';
 
   @override
+  String get settingsItemWebDavAutoRefresh => '自动刷新 WebDAV 电影目录';
+
+  @override
+  String get settingsItemWebDavAutoRefreshDescription => '启动、回到前台及每 5 分钟增量同步一次，不会触发刮削';
+
+  @override
   String get settingsItemDisplaySettings => '显示设置';
 
   @override
